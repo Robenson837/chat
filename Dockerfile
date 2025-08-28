@@ -20,8 +20,8 @@ COPY . .
 # Fix permissions for node_modules binaries
 RUN find /app -name "node_modules" -type d -exec chmod -R +x {}/\.bin \; || true
 
-# Build frontend
-RUN cd frontend && npm run build
+# Build frontend with direct npx call
+RUN cd frontend && npx vite build
 
 # Production stage
 FROM node:18-alpine AS production
