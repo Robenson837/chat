@@ -2,7 +2,7 @@ import axios from 'axios'
 import useAuthStore from '../store/authStore'
 import toast from 'react-hot-toast'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:3000/api')
 
 // Create axios instance
 const api = axios.create({
@@ -166,7 +166,7 @@ export const buildFileUrl = (path) => {
   if (path.startsWith('http')) return path
   
   // For relative paths, use the proxy URL
-  const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 'http://localhost:3000'
+  const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || (import.meta.env.PROD ? '' : 'http://localhost:3000')
   return `${baseUrl}${path}`
 }
 

@@ -12,7 +12,8 @@
       "Bash(netsh advfirewall firewall show rule:*)",
       "Bash(netsh:*)",
       "Bash(del \"C:\\Users\\roben\\Desktop\\Chat\\nul\")",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": [],
