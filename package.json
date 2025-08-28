@@ -13,7 +13,7 @@
     "dev:proxy": "node dev-proxy.js",
     "dev:simple": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "start:backend-only": "cd backend && npm start",
-    "build": "cd frontend && npm run build",
+    "build": "cd frontend && npx vite build",
     "test": "cd backend && npm test",
     "seed": "cd backend && node scripts/create-demo-users.js",
     "lint": "eslint backend frontend --ext .js,.jsx,.ts,.tsx",

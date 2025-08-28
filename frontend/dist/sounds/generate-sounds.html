@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate Call Sounds</title>
+</head>
+<body>
+    <h1>Call Sound Generator</h1>
+    <button onclick="generateOutgoingRingtone()">Generate Outgoing Call Sound</button>
+    <button onclick="generateIncomingRingtone()">Generate Incoming Call Sound</button>
+    
+    <script>
+        // Generate outgoing call ringtone (single tone pattern)
+        async function generateOutgoingRingtone() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)()
+            const sampleRate = audioContext.sampleRate
+            const duration = 3 // 3 seconds
+            const length = sampleRate * duration
+            const buffer = audioContext.createBuffer(1, length, sampleRate)
+            const data = buffer.getChannelData(0)
+            
+            // Generate a simple beep pattern (400Hz tone with pauses)
+            for (let i = 0; i < length; i++) {
+                const time = i / sampleRate
+                const beepDuration = 0.5
+                const pauseDuration = 0.5
+                const cycle = beepDuration + pauseDuration
+                const withinCycle = time % cycle
+                
+                if (withinCycle < beepDuration) {
+                    data[i] = Math.sin(2 * Math.PI * 400 * time) * 0.3
+                } else {
+                    data[i] = 0
+                }
+            }
+            
+            downloadBuffer(buffer, 'outgoing-call.wav')
+        }
+        
+        // Generate incoming call ringtone (dual tone pattern)
+        async function generateIncomingRingtone() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)()
+            const sampleRate = audioContext.sampleRate
+            const duration = 4 // 4 seconds
+            const length = sampleRate * duration
+            const buffer = audioContext.createBuffer(1, length, sampleRate)
+            const data = buffer.getChannelData(0)
+            
+            // Generate a phone-like ring pattern (440Hz + 480Hz with rhythm)
+            for (let i = 0; i < length; i++) {
+                const time = i / sampleRate
+                const ringDuration = 1.0
+                const pauseDuration = 2.0
+                const cycle = ringDuration + pauseDuration
+                const withinCycle = time % cycle
+                
+                if (withinCycle < ringDuration) {
+                    // Mix two frequencies for realistic phone ring
+                    const wave1 = Math.sin(2 * Math.PI * 440 * time) * 0.2
+                    const wave2 = Math.sin(2 * Math.PI * 480 * time) * 0.2
+                    data[i] = wave1 + wave2
+                } else {
+                    data[i] = 0
+                }
+            }
+            
+            downloadBuffer(buffer, 'incoming-call.wav')
+        }
+        
+        // Convert AudioBuffer to WAV and download
+        function downloadBuffer(buffer, filename) {
+            const wav = bufferToWave(buffer)
+            const blob = new Blob([wav], { type: 'audio/wav' })
+            const url = URL.createObjectURL(blob)
+            
+            const a = document.createElement('a')
+            a.href = url
+            a.download = filename
+            document.body.appendChild(a)
+            a.click()
+            document.body.removeChild(a)
+            URL.revokeObjectURL(url)
+        }
+        
+        // Convert AudioBuffer to WAV format
+        function bufferToWave(buffer) {
+            const length = buffer.length
+            const data = buffer.getChannelData(0)
+            const arrayBuffer = new ArrayBuffer(44 + length * 2)
+            const view = new DataView(arrayBuffer)
+            
+            // WAV header
+            const writeString = (offset, string) => {
+                for (let i = 0; i < string.length; i++) {
+                    view.setUint8(offset + i, string.charCodeAt(i))
+                }
+            }
+            
+            writeString(0, 'RIFF')
+            view.setUint32(4, 36 + length * 2, true)
+            writeString(8, 'WAVE')
+            writeString(12, 'fmt ')
+            view.setUint32(16, 16, true)
+            view.setUint16(20, 1, true)
+            view.setUint16(22, 1, true)
+            view.setUint32(24, buffer.sampleRate, true)
+            view.setUint32(28, buffer.sampleRate * 2, true)
+            view.setUint16(32, 2, true)
+            view.setUint16(34, 16, true)
+            writeString(36, 'data')
+            view.setUint32(40, length * 2, true)
+            
+            // Convert audio data
+            let offset = 44
+            for (let i = 0; i < length; i++) {
+                const sample = Math.max(-1, Math.min(1, data[i]))
+                view.setInt16(offset, sample * 32767, true)
+                offset += 2
+            }
+            
+            return arrayBuffer
+        }
+    </script>
+</body>
+</html>

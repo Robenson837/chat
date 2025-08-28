@@ -125,7 +125,7 @@ const ChatArea = () => {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-hidden relative">
         <MessageList userId={chatUser._id} />
       </div>
 

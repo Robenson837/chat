@@ -11,7 +11,8 @@
       "Bash(ipconfig)",
       "Bash(netsh advfirewall firewall show rule:*)",
       "Bash(netsh:*)",
-      "Bash(del \"C:\\Users\\roben\\Desktop\\Chat\\nul\")"
+      "Bash(del \"C:\\Users\\roben\\Desktop\\Chat\\nul\")",
+      "Bash(npm run build:*)"
     ],
     "deny": [],
     "ask": [],

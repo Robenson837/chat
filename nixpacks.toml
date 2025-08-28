@@ -1,0 +1,21 @@
+[phases.setup]
+nixPkgs = ["nodejs_18", "npm"]
+
+[phases.install]
+cmds = [
+    "npm ci",
+    "cd frontend && npm ci",
+    "cd backend && npm ci"
+]
+
+[phases.build]
+cmds = [
+    "find . -name 'node_modules' -type d -exec chmod -R +x {}/.bin \\; || true",
+    "cd frontend && npx vite build"
+]
+
+[start]
+cmd = "cd backend && npm start"
+
+[variables]
+NODE_ENV = "production"
