@@ -1,0 +1,113 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+@layer base {
+  * {
+    @apply box-border;
+  }
+  
+  html {
+    @apply h-full;
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply h-full bg-gray-50 font-sans text-gray-900 antialiased;
+  }
+  
+  #root {
+    @apply h-full;
+  }
+  
+  /* Custom scrollbar styles */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 rounded-full;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-400;
+  }
+}
+
+@layer components {
+  /* Button variants */
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-200;
+  }
+  
+  .btn-secondary {
+    @apply inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-200;
+  }
+  
+  .btn-ghost {
+    @apply inline-flex items-center justify-center px-3 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-200;
+  }
+  
+  .btn-danger {
+    @apply inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200;
+  }
+  
+  /* Input styles */
+  .input-primary {
+    @apply block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm transition-colors duration-200;
+  }
+  
+  /* Card styles */
+  .card {
+    @apply bg-white shadow-sm rounded-lg border border-gray-200;
+  }
+  
+  .card-hover {
+    @apply card hover:shadow-md hover:border-gray-300 transition-shadow duration-200;
+  }
+  
+  /* Status indicators */
+  .status-online {
+    @apply w-3 h-3 bg-green-400 rounded-full;
+  }
+  
+  .status-offline {
+    @apply w-3 h-3 bg-gray-400 rounded-full;
+  }
+  
+  .status-away {
+    @apply w-3 h-3 bg-yellow-400 rounded-full;
+  }
+  
+  /* Message bubble styles */
+  .message-bubble-sent {
+    @apply bg-primary text-white rounded-lg rounded-br-sm px-3 py-2 max-w-xs sm:max-w-sm lg:max-w-md ml-auto;
+  }
+  
+  .message-bubble-received {
+    @apply bg-white border border-gray-200 text-gray-900 rounded-lg rounded-bl-sm px-3 py-2 max-w-xs sm:max-w-sm lg:max-w-md mr-auto;
+  }
+  
+  /* Loading states */
+  .skeleton {
+    @apply animate-pulse bg-gray-200 rounded;
+  }
+  
+  /* Custom animations */
+  .fade-in {
+    @apply animate-fade-in;
+  }
+  
+  .slide-up {
+    @apply animate-slide-up;
+  }
+}

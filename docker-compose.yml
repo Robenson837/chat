@@ -1,0 +1,148 @@
+version: '3.8'
+
+services:
+  # MongoDB Service
+  mongodb:
+    image: mongo:7
+    container_name: vigi-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=vigichat_user
+      - MONGO_INITDB_ROOT_PASSWORD=Vigichat4312
+      - MONGO_INITDB_DATABASE=vigichat_db
+    volumes:
+      - mongodb_data:/data/db
+      - ./mongodb/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - vigi-network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/vigichat_db --quiet
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Backend Service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: vigi-backend
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - MONGO_URI=mongodb://vigichat_user:Vigichat4312@mongodb:27017/vigichat_db?authSource=admin
+      - JWT_SECRET=vigi-super-secret-jwt-key-production-change-this
+      - JWT_REFRESH_SECRET=vigi-super-secret-refresh-key-production-change-this
+      - JWT_EXPIRE=24h
+      - JWT_REFRESH_EXPIRE=7d
+      - PORT=3001
+      - CLIENT_URL=http://localhost:3000
+      - STUN_SERVERS=stun:stun.l.google.com:19302,stun:stun1.l.google.com:19302
+      - TURN_HOST=coturn
+      - TURN_PORT=3478
+      - TURN_USER=vigiturn
+      - TURN_PASS=vigisecret123
+      - MAX_FILE_SIZE=10485760
+      - UPLOAD_PATH=./uploads
+      - RATE_LIMIT_WINDOW_MS=900000
+      - RATE_LIMIT_MAX_REQUESTS=100
+    volumes:
+      - backend_uploads:/app/uploads
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - vigi-network
+    healthcheck:
+      test: ["CMD", "node", "healthcheck.js"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Frontend Service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: vigi-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    environment:
+      - VITE_API_BASE_URL=http://localhost:3001/api
+      - VITE_SOCKET_URL=http://localhost:3001
+      - VITE_TURN_HOST=localhost
+      - VITE_TURN_PORT=3478
+      - VITE_TURN_USER=vigiturn
+      - VITE_TURN_PASS=vigisecret123
+    depends_on:
+      - backend
+    networks:
+      - vigi-network
+
+  # COTURN Service (TURN/STUN server for WebRTC)
+  coturn:
+    image: coturn/coturn:4.6.2
+    container_name: vigi-coturn
+    restart: unless-stopped
+    ports:
+      - "3478:3478"
+      - "3478:3478/udp"
+      - "49152-65535:49152-65535/udp"
+    environment:
+      - TURNSERVER_ENABLED=1
+      - TURN_USERNAME=vigiturn
+      - TURN_PASSWORD=vigisecret123
+      - TURN_SECRET=vigisecret123
+      - TURN_REALM=vigi.local
+      - TURN_PORT=3478
+      - TURN_MIN_PORT=49152
+      - TURN_MAX_PORT=65535
+    command: >
+      turnserver
+      --listening-port=3478
+      --relay-device=eth0
+      --min-port=49152
+      --max-port=65535
+      --verbose
+      --fingerprint
+      --lt-cred-mech
+      --user=vigiturn:vigisecret123
+      --realm=vigi.local
+      --no-dtls
+      --no-tls
+    networks:
+      - vigi-network
+
+  # Redis (optional, for scaling Socket.io)
+  redis:
+    image: redis:7-alpine
+    container_name: vigi-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - vigi-network
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  mongodb_data:
+  backend_uploads:
+  redis_data:
+
+networks:
+  vigi-network:
+    driver: bridge

@@ -1,0 +1,32 @@
+{
+  "name": "vigi-app",
+  "version": "1.0.0",
+  "description": "Vigi - Modern messaging app with voice and video calls",
+  "main": "backend/server.js",
+  "type": "module",
+  "scripts": {
+    "setup": "node setup.js",
+    "start": "node start-dev.js",
+    "dev": "node start-dev.js",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev", 
+    "dev:proxy": "node dev-proxy.js",
+    "dev:simple": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "start:backend-only": "cd backend && npm start",
+    "build": "cd frontend && npm run build",
+    "test": "cd backend && npm test",
+    "seed": "cd backend && node scripts/create-demo-users.js",
+    "lint": "eslint backend frontend --ext .js,.jsx,.ts,.tsx",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down"
+  },
+  "keywords": ["messaging", "webrtc", "realtime", "chat"],
+  "author": "Vigi Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "eslint": "^8.57.0",
+    "express": "^4.18.2",
+    "http-proxy-middleware": "^2.0.6"
+  }
+}
