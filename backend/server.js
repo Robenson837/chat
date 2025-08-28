@@ -25,6 +25,9 @@ dotenv.config();
 
 const app = express();
 const server = createServer(app);
+
+// Trust proxy for production deployment
+app.set('trust proxy', 1);
 const io = new Server(server, {
   cors: {
     origin: process.env.CLIENT_URL ? process.env.CLIENT_URL.split(',') : true,
